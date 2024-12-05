@@ -8,7 +8,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.innoveworkshop.gametest"
+        applicationId = "pt.iade.gmaes.bowling69"
         minSdk = 28
         targetSdk = 34
         versionCode = 1
