@@ -1,10 +1,14 @@
 package com.innoveworkshop.gametest
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import com.innoveworkshop.gametest.assets.DroppingCircle
 import com.innoveworkshop.gametest.assets.DroppingRectangle
 import com.innoveworkshop.gametest.engine.Circle
 import com.innoveworkshop.gametest.engine.GameObject
@@ -21,11 +25,22 @@ class MainActivity : AppCompatActivity() {
 
     protected var game: Game? = null
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         gameSurface = findViewById<View>(R.id.gameSurface) as GameSurface
+        gameSurface!!.setOnTouchListener(object : View.OnTouchListener {
+            override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+                when (event?.action) {
+                    MotionEvent.ACTION_DOWN -> Log.e("ACTION DOWN", "this shits stinks correctly")// touoch start
+                    MotionEvent.ACTION_UP -> Log.e("ACTION UP", "aaaaaaaaaaaaaaaaaaaaaaaa")// touoch ended
+                }
+
+                return v?.onTouchEvent(event) ?: true
+            }
+        })
         game = Game()
         gameSurface!!.setRootGameObject(game)
 
@@ -70,7 +85,14 @@ class MainActivity : AppCompatActivity() {
             surface.addGameObject(
                 DroppingRectangle(
                     Vector((surface.width / 3).toFloat(), (surface.height / 3).toFloat()),
-                    100f, 100f, 10f, Color.rgb(128, 14, 80)
+                    100f, 100f, 10f, Color.rgb(0, 14, 80)
+                )
+            )
+
+            surface.addGameObject(
+                DroppingCircle(
+                    surface.width / 4.toFloat(), surface.height / 4.toFloat(),
+                    100f, 10f, Color.rgb(128, 14, 80)
                 )
             )
         }
