@@ -12,6 +12,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import com.innoveworkshop.gametest.assets.BowlingBall
 import com.innoveworkshop.gametest.assets.DroppingCircle
 import com.innoveworkshop.gametest.assets.DroppingRectangle
+import com.innoveworkshop.gametest.assets.Pin
 import com.innoveworkshop.gametest.engine.Circle
 import com.innoveworkshop.gametest.engine.GameObject
 import com.innoveworkshop.gametest.engine.GameSurface
@@ -22,7 +23,8 @@ class MainActivity : AppCompatActivity() {
     private var gameSurface: GameSurface? = null
     private var controlsLayout: ConstraintLayout? = null
     private var game: Game? = null
-    private var droppingCircle: BowlingBall? = null
+    private var bowlingBall: BowlingBall? = null
+    private var pin: Pin? = null
     private var initialTouch: Vector? = null
 
     @SuppressLint("ClickableViewAccessibility")
@@ -54,7 +56,7 @@ class MainActivity : AppCompatActivity() {
                         Log.e("REVERSED VECTOR", "Reversed force: (${reversedForce.x}, ${reversedForce.y})")
 
                         // Apply the reversed force to the circle
-                        droppingCircle?.applyForce(reversedForce, scaleFactor = 0f)
+                        bowlingBall?.applyForce(reversedForce, scaleFactor = 0f)
                     }
                 }
             }
@@ -67,16 +69,25 @@ class MainActivity : AppCompatActivity() {
             super.onStart(surface)
 
             // Create the circle and store it in the global variable
-            droppingCircle = BowlingBall(
-                surface?.width?.toFloat()?.div(2) ?: 0f, // Center horizontally
-                (surface?.height?.toFloat() ?: 0f) - 100f, // Bottom of the screen, considering the radius
+            bowlingBall = BowlingBall(
+                (surface!!.width.toFloat())/2f, // Center horizontally
+                surface.height.toFloat()-100f, // Bottom of the screen, considering the radius
                 100f, // Radius of the ball
                 Color.rgb(128, 14, 80),
                 10f
             )
-
             // Add the circle to the surface
-            surface?.addGameObject(droppingCircle!!)
+            surface?.addGameObject(bowlingBall!!)
+
+            pin = Pin(
+                (surface!!.width.toFloat())/2f,
+                (surface.height.toFloat())/2f,
+                75f,
+                Color.rgb(0,255,0)
+            )
+
+            surface?.addGameObject(pin!!)
+
         }
     }
 

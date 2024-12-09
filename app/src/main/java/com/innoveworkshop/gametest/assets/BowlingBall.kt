@@ -13,7 +13,7 @@ class BowlingBall(
     var mass: Float
 ) : Circle(x, y, radius, color) {
     var velocity: Vector = Vector(0f, 0f) // Ball's current velocity
-    private val friction: Float = 0.9f // Friction coefficient
+    private val friction: Float = 0.98f // Friction coefficient
 
     override fun onFixedUpdate() {
         super.onFixedUpdate()
