@@ -35,6 +35,14 @@ open class Rectangle(position: Vector?, var width: Float, var height: Float, col
         return (position.x + width / 2) >= gameSurface!!.width
     }
 
+    override fun hitBottomWall(): Boolean {
+        return (position.y  + width / 2) >= gameSurface!!.height
+    }
+
+    override fun hitTopWall(): Boolean {
+        return (position.y  + width / 2) >= gameSurface!!.height
+    }
+
     override val isFloored: Boolean
         get() = (position.y + height / 2) >= gameSurface!!.height
 }

@@ -16,6 +16,19 @@ interface Caged {
     fun hitRightWall(): Boolean
 
     /**
+     * Checks if a GameObject has hit the top wall.
+     *
+     * @return True if it has hit the top wall, otherwise False.
+     */
+    fun hitTopWall(): Boolean
+
+    /**
+     * Checks if a GameObject has hit the bottom wall.
+     *
+     * @return True if it has hit the bottom wall, otherwise False.
+     */
+    fun hitBottomWall(): Boolean
+    /**
      * Checks if a GameObject is on the floor.
      *
      * @return True if it's on the floor, otherwise False.

@@ -3,9 +3,12 @@ package com.innoveworkshop.gametest
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.innoveworkshop.gametest.assets.BowlingBall
@@ -13,14 +16,17 @@ import com.innoveworkshop.gametest.assets.Pin
 import com.innoveworkshop.gametest.engine.GameObject
 import com.innoveworkshop.gametest.engine.GameSurface
 import com.innoveworkshop.gametest.engine.Vector
+import kotlin.math.absoluteValue
 import kotlin.math.sqrt
 
 class MainActivity : AppCompatActivity() {
     private var gameSurface: GameSurface? = null
     private var controlsLayout: ConstraintLayout? = null
+    private var scoreTxt: TextView? = null
     private var game: Game? = null
     private var bowlingBall: BowlingBall? = null
     private var initialTouch: Vector? = null
+    private var hasLaunch : Boolean = false
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,28 +36,31 @@ class MainActivity : AppCompatActivity() {
         game = Game()
         gameSurface!!.setRootGameObject(game)
 
+        scoreTxt = findViewById<View>(R.id.score) as TextView
+
         controlsLayout = findViewById<View>(R.id.controls_layout) as ConstraintLayout
         controlsLayout!!.setOnTouchListener { _, event ->
             when (event?.action) {
+                MotionEvent.ACTION_MOVE ->{
+                    Log.i("aaaa", "${event.x} ${event.y}")}
                 MotionEvent.ACTION_DOWN -> {
                     initialTouch = Vector(event.x, event.y)
-                    Log.e("ACTION DOWN", "Touch started at: (${event.x}, ${event.y})")
+                    Log.i("ACTION DOWN", "Touch started at: (${event.x}, ${event.y})")
                 }
                 MotionEvent.ACTION_UP -> {
-                    if (initialTouch != null) {
+                    if (initialTouch != null && !hasLaunch) {
                         val releaseTouch = Vector(event.x, event.y)
                         val forceVector = Vector(
                             releaseTouch.x - initialTouch!!.x,
                             releaseTouch.y - initialTouch!!.y
                         )
-                        Log.e("FORCE VECTOR", "Applying force: (${forceVector.x}, ${forceVector.y})")
-
                         // Reverse the force vector
                         val reversedForce = forceVector.reverse()
-                        Log.e("REVERSED VECTOR", "Reversed force: (${reversedForce.x}, ${reversedForce.y})")
+                        Log.i("VECTOR", "Applied force: (${reversedForce.x}, ${reversedForce.y})")
 
                         // Apply the reversed force to the circle
-                        bowlingBall?.applyForce(reversedForce, scaleFactor = 0f)
+                        bowlingBall?.applyForce(reversedForce)
+                        hasLaunch = true
                     }
                 }
             }
@@ -61,13 +70,19 @@ class MainActivity : AppCompatActivity() {
 
     inner class Game : GameObject() {
         private var pins: MutableList<Pin?>? = null
+        private var initialPositionX : Float = 0f
+        private var initialPositionY : Float = 0f
+        private var numberOfTries: Int = 0
         override fun onStart(surface: GameSurface?) {
             super.onStart(surface)
+            initialPositionX = (surface!!.width.toFloat())/2f
+            initialPositionY = surface.height.toFloat() - 200f
+
 
             // Create the circle and store it in the global variable
             bowlingBall = BowlingBall(
-                (surface!!.width.toFloat())/2f, // Center horizontally
-                surface.height.toFloat()-100f, // Bottom of the screen, considering the radius
+                initialPositionX, // Center horizontally
+                initialPositionY, // Bottom of the screen, considering the radius
                 100f, // Radius of the ball
                 Color.rgb(128, 14, 80),
                 10f
@@ -82,8 +97,22 @@ class MainActivity : AppCompatActivity() {
 
         override fun onFixedUpdate() {
             super.onFixedUpdate()
+            if (bowlingBall!!.hitRightWall() || bowlingBall!!.hitLeftWall() || bowlingBall!!.hitTopWall() ||bowlingBall!!.hitBottomWall()){
+                ResetBowlingBall()
+            }
+
+            Log.i("", "${bowlingBall!!.velocity.x.absoluteValue} ${bowlingBall!!.velocity.y.absoluteValue}")
+
+            if (bowlingBall!!.velocity.x.absoluteValue <= 1f && bowlingBall!!.velocity.y.absoluteValue <= 1f && hasLaunch){
+                ResetBowlingBall()
+            }
 
 
+            val mainHandler = Handler(Looper.getMainLooper())
+            mainHandler.post {
+                // This will update the UI safely on the main thread
+                scoreTxt?.text = "Score: ${bowlingBall!!.score}"
+            }
             val iterator = pins!!.iterator()
             while (iterator.hasNext()) {
                 val pin = iterator.next()
@@ -93,8 +122,18 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-    }
+        fun ResetBowlingBall(){
+            bowlingBall!!.velocity.x = 0f
+            bowlingBall!!.velocity.y = 0f
+            bowlingBall!!.position.x = initialPositionX
+            bowlingBall!!.position.y = initialPositionY
+            numberOfTries++
+            hasLaunch = false
 
+            if (numberOfTries >= 3)
+                bowlingBall!!.destroy()
+        }
+    }
 
     fun Obstacles(surface: GameSurface?): MutableList<Pin?> {
         val listOfObstacles = mutableListOf<Pin?>() // Create a mutable list of Circle objects
@@ -133,7 +172,4 @@ class MainActivity : AppCompatActivity() {
         }
         return listOfObstacles
     }
-
-
-
 }

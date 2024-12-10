@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.util.Log
 import com.innoveworkshop.gametest.engine.Circle
 import com.innoveworkshop.gametest.engine.Vector
+import java.lang.Math.*
 import kotlin.math.absoluteValue
 import kotlin.math.log
 import kotlin.math.sqrt
@@ -16,6 +17,7 @@ class BowlingBall(
     var mass: Float
 ) : Circle(x, y, radius, color) {
     var velocity: Vector = Vector(0f, 0f) // Ball's current velocity
+    var score: Int = 0;
     private val friction: Float = 0.98f // Friction coefficient
 
     override fun onFixedUpdate() {
@@ -32,8 +34,6 @@ class BowlingBall(
         // Stop the ball if velocity is very small
         if (velocity.x.absoluteValue < 0.1f) velocity.x = 0f
         if (velocity.y.absoluteValue < 0.1f) velocity.y = 0f
-
-        //Log.e("PHYSICS", "Position: (${position.x}, ${position.y}), Velocity: (${velocity.x}, ${velocity.y})")
     }
 
     fun applyForce(force: Vector) {
@@ -47,26 +47,19 @@ class BowlingBall(
 
     @SuppressLint("DefaultLocale")
     fun CollideWithPin(circleCollided: Pin): Boolean {
+        val radiusSum = (this.radius + circleCollided.radius).toDouble()
 
-        val radiusSum = (this.radius + circleCollided.radius).toDouble();
+        val distanceXsquared: Double = pow((circleCollided.position.x - this.position.x).toDouble(), 2.toDouble());
+        val directionX: Float = (this.position.x - circleCollided.position.x)
 
-        val distanceXsquared: Double;
-        distanceXsquared = Math.pow((circleCollided.position.x - this.position.x).toDouble(), 2.toDouble());
-        var directionX: Float
-        directionX = (this.position.x - circleCollided.position.x);
+        val distanceYsquared: Double = pow((circleCollided.position.y - this.position.y).toDouble(), 2.toDouble())
+        val directionY: Float = (this.position.y - circleCollided.position.y)
 
-        var distanceYsquared: Double;
-        distanceYsquared = Math.pow((circleCollided.position.y - this.position.y).toDouble(), 2.toDouble())
-        var directionY: Float
-        directionY = (this.position.y - circleCollided.position.y);
-
-        val magnitude: Double;
-        magnitude = sqrt(distanceXsquared + distanceYsquared)
-
-
+        val magnitude: Double = sqrt(distanceXsquared + distanceYsquared)
 
         if (magnitude <= radiusSum){
             BounceCalculator(directionX, directionY)
+            score++
             circleCollided.destroy()
             return true
         }
