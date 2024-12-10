@@ -103,7 +103,7 @@ class MainActivity : AppCompatActivity() {
 
             Log.i("", "${bowlingBall!!.velocity.x.absoluteValue} ${bowlingBall!!.velocity.y.absoluteValue}")
 
-            if (bowlingBall!!.velocity.x.absoluteValue <= 1f && bowlingBall!!.velocity.y.absoluteValue <= 1f && hasLaunch){
+            if (bowlingBall!!.velocity.x.absoluteValue <= 0.1f && bowlingBall!!.velocity.y.absoluteValue <= 0.1f && hasLaunch){
                 ResetBowlingBall()
             }
 
