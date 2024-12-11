@@ -1,12 +1,10 @@
 package com.innoveworkshop.gametest.assets
 
 import android.annotation.SuppressLint
-import android.util.Log
 import com.innoveworkshop.gametest.engine.Circle
 import com.innoveworkshop.gametest.engine.Vector
 import java.lang.Math.*
 import kotlin.math.absoluteValue
-import kotlin.math.log
 import kotlin.math.sqrt
 
 class BowlingBall(
@@ -45,7 +43,6 @@ class BowlingBall(
     }
 
 
-    @SuppressLint("DefaultLocale")
     fun CollideWithPin(circleCollided: Pin): Boolean {
         val radiusSum = (this.radius + circleCollided.radius).toDouble()
 
@@ -67,8 +64,7 @@ class BowlingBall(
             return false
     }
 
-    @SuppressLint("DefaultLocale")
-    private fun BounceCalculator(directionX: Float, directionY: Float) {
+        private fun BounceCalculator(directionX: Float, directionY: Float) {
         // Define a scaling factor for the velocity reduction
         val reductionFactor = 0.85f // 10% reduction in velocity
 

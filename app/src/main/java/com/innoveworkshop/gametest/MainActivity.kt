@@ -41,8 +41,6 @@ class MainActivity : AppCompatActivity() {
         controlsLayout = findViewById<View>(R.id.controls_layout) as ConstraintLayout
         controlsLayout!!.setOnTouchListener { _, event ->
             when (event?.action) {
-                MotionEvent.ACTION_MOVE ->{
-                    Log.i("aaaa", "${event.x} ${event.y}")}
                 MotionEvent.ACTION_DOWN -> {
                     initialTouch = Vector(event.x, event.y)
                     Log.i("ACTION DOWN", "Touch started at: (${event.x}, ${event.y})")
